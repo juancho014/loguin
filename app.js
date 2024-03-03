@@ -19,27 +19,31 @@ app.get('/login',(req,res) => {
     res.render("login")
 })
 
-const salt=10;
-app.post("/signup",(req,res)=>{
-
+app.post("/signup",async(req,res)=>{
+    
+   const salt=10;
    const name=req.body.username
    const password=req.body.password
 
-const existeUser=  usuario.findOne({name})
-if(!existeUser){
-   return res.status(400).send('el usuario existe')
-}else{
-    const registro= new usuario({name,password:bcrypt.hashSync(password,salt)});
-  registro.save()
-    .then(()=>{
-        res.status(201).render('login')
-        
+   try {
+    const existeUser = await usuario.findOne({ name: name });
+    if (existeUser) {
+        return res.status(400).send('El usuario ya existe');
+    } else {
+        const hashedPassword = bcrypt.hashSync(password, salt);
+        const registro = new usuario({ name, password: hashedPassword });
+        await registro.save();
+        res.status(201).render('login');
         console.log(registro);
-    })
-    .catch((error)=>{res.status(400).send(error)})
-
+    }
+} catch (error) {
+    res.status(400).send(error);
 }
-})
+});
+  
+
+
+
 
 app.post('/login',async (req,res)=>{
 
