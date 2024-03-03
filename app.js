@@ -27,7 +27,7 @@ app.post("/signup",(req,res)=>{
 
 const existeUser=  usuario.findOne({name})
 if(!existeUser){
-    res.send('el usuario no existe')
+   return res.status(400).send('el usuario existe')
 }else{
     const registro= new usuario({name,password:bcrypt.hashSync(password,salt)});
   registro.save()
@@ -46,7 +46,7 @@ app.post('/login',async (req,res)=>{
 try {
     const check=await usuario.findOne({name:req.body.username})
         if(!check){
-            res.send("usuario no encontrado debe loguearse")
+          return res.status(400).send("usuario no encontrado debe loguearse")
             
         }
         const match=await bcrypt.compare(req.body.password,check.password)
@@ -58,10 +58,12 @@ try {
         }
     
 } catch (error) {
-    res.send("error")
+    res.send("contraseña incorrecta")
 }
 
 })
+
+
 
 app.get("/",(req,res)=>{
     res.render("home")
