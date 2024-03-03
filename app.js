@@ -42,31 +42,26 @@ if(!existeUser){
 })
 
 app.post('/login',async (req,res)=>{
-    try{
-        
-        const check=await usuario.findOne({name:req.body.username})
+
+try {
+    const check=await usuario.findOne({name:req.body.username})
         if(!check){
-            res.send("usuario no encontrado")
+            res.send("usuario no encontrado debe loguearse")
             
         }
         const match=await bcrypt.compare(req.body.password,check.password)
-            if (match) {
-                res.render("home")
-            }else{
-                
-                res.send("password")
-            }
+        if (match) {
+            res.render("home")
+        }else{
+            
+            req.send("password incorrecta")
+        }
+    
+} catch (error) {
+    res.send("error")
+}
 
-    }catch{
-        res.send("error")
-    }
-  
-    }
-
-
-)
-
-
+})
 
 app.get("/",(req,res)=>{
     res.render("home")
